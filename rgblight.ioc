@@ -82,6 +82,7 @@ MxCube.Version=6.0.1
 VP_TIM2_VS_ClockSourceINT.Mode=Internal
 SH.S_TIM2_CH3.0=TIM2_CH3,PWM Generation3 CH3
 PA14.Mode=Serial_Wire
+NVIC.TIM2_IRQn=true\:0\:0\:false\:false\:true\:true\:true
 File.Version=6
 VP_SYS_VS_Systick.Mode=SysTick
 TIM2.Channel-PWM\ Generation3\ CH3=TIM_CHANNEL_3

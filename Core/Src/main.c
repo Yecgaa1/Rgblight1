@@ -159,6 +159,9 @@ int main(void) {
                         HAL_Delay(10);
                     }
                     i = false;
+                    nred=red;
+                    ngreen=green;
+                    nblue=blue;
                     HAL_Delay(1000);
                 } else {
                     tred = nred/1.2;
@@ -178,31 +181,48 @@ int main(void) {
 
             } else {
 
-                if ((nred * 1.2) > red) {
-                    while (nred != red) {
-                        htim2.Instance->CCR1 = (3.91 * nred++);
+                if ((nred / 1.2) < 10||(ngreen / 1.2) < 10||(nblue / 1.2) < 10) {
+                    while (10 != nred || 10 != ngreen || 10 != nblue) {
+                        if (10 != nred)
+                            htim2.Instance->CCR1 = (3.91 * (red-(--nred)));
+                        if (10 != ngreen)
+                            htim2.Instance->CCR2 = (3.91 * (green-(--ngreen)));
+                        if (10 != nblue)
+                            htim2.Instance->CCR3 = (3.91 * blue-(--nblue));
                         HAL_Delay(10);
                     }
-                    while (nblue != blue) {
-                        htim2.Instance->CCR2 = (3.91 * nblue++);
+                    while (nred) {
+
+                        htim2.Instance->CCR1 = (3.91 * (red-(--nred)));
+
+                        htim2.Instance->CCR2 = (3.91 *(green-(--ngreen)));
+
+                        htim2.Instance->CCR3 = (3.91 * (blue-(--nblue)));
                         HAL_Delay(10);
                     }
-                    while (ngreen != green) {
-                        htim2.Instance->CCR3 = (3.91 * ngreen++);
-                        HAL_Delay(10);
-                    }
+                    nred=red;
+                    ngreen=green;
+                    nblue=blue;
                     i = true;
-                    //HAL_Delay(1000);
+                    HAL_Delay(1000);
                 } else {
-                    htim2.Instance->CCR1 = (3.91 * nred);
-                    htim2.Instance->CCR2 = (3.91 * ngreen);
-                    htim2.Instance->CCR3 = (3.91 * nblue);
-                    (nred = nred * 1.2 + 1);
-                    (ngreen = ngreen * 1.2 + 1);
-                    (nblue = nblue * 1.2 + 1);
+                    tred = nred/1.2;
+                    tgreen= ngreen/1.2;
+                    tblue = nblue/1.2;
+                    while (tblue != nblue || tgreen != ngreen || tred != nred) {
+                        if (tred != nred)
+                            htim2.Instance->CCR1 = (3.91 * (red-(--nred)));
+                        if (tgreen != ngreen)
+                            htim2.Instance->CCR2 = (3.91 * (green-(--ngreen)));
+                        if (tblue != nblue)
+                            htim2.Instance->CCR3 = (3.91 *  (blue-(--nblue)));
+                        HAL_Delay(20);
+                    }
+
                 }
             }
         } else {
+
             if (red != nred) {
                 if (red > nred)
                     htim2.Instance->CCR1 = (3.91 * nred++);//red
@@ -293,7 +313,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             strncpy(dest2, RxBuffer + 2, 2);
             char dest3[2] = {""};
             strncpy(dest3, RxBuffer + 4, 2);
-            int i = 0;
+            if(!i)
+            {
+                nred=red-nred;
+                ngreen=green-ngreen;
+                nblue=blue-nblue;
+            }
             sscanf(dest1, "%x", &red);
             //htim2.Instance->CCR1 = (3.1 * i);//red
 

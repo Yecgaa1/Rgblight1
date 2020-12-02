@@ -38,8 +38,9 @@ uint8_t Uart1_Rx_Cnt = 0;        //接收缓冲计数
 
 
 int pwmVal = 0;
-int red = 0, blue = 0, green = 0;
-int nred = 0, nblue = 0, ngreen = 0;
+int red = 0, blue = 0, green = 0;//目标的量
+int nred = 0, nblue = 0, ngreen = 0;//现在的量
+int tred = 0, tblue = 0, tgreen = 0;//临时的量
 bool flag = false;//true为呼吸
 bool i = true;//down
 /* USER CODE END Includes */
@@ -138,29 +139,41 @@ int main(void) {
         if (flag) {
             HAL_Delay(100);
             if (i) {
-                if ((nred / 1.2) < 10) {
+                if ((nred / 1.2) < 10||(ngreen / 1.2) < 10||(nblue / 1.2) < 10) {
+                    while (10 != nred || 10 != ngreen || 10 != nblue) {
+                        if (10 != nred)
+                            htim2.Instance->CCR1 = (3.91 * --nred);
+                        if (10 != ngreen)
+                            htim2.Instance->CCR2 = (3.91 * --ngreen);
+                        if (10 != nblue)
+                            htim2.Instance->CCR3 = (3.91 * --nblue);
+                        HAL_Delay(10);
+                    }
                     while (nred) {
+
                         htim2.Instance->CCR1 = (3.91 * --nred);
-                        HAL_Delay(10);
-                    }
-                    while (nblue) {
-                        htim2.Instance->CCR2 = (3.91 * --nblue);
-                        HAL_Delay(10);
-                    }
-                    while (ngreen) {
-                        htim2.Instance->CCR3 = (3.91 * --ngreen);
+
+                        htim2.Instance->CCR2 = (3.91 * --ngreen);
+
+                        htim2.Instance->CCR3 = (3.91 * --nblue);
                         HAL_Delay(10);
                     }
                     i = false;
                     HAL_Delay(1000);
                 } else {
+                    tred = nred/1.2;
+                    tgreen= ngreen/1.2;
+                    tblue = nblue/1.2;
+                    while (tblue != nblue || tgreen != ngreen || tred != nred) {
+                        if (tred != nred)
+                            htim2.Instance->CCR1 = (3.91 * --nred);
+                        if (tgreen != ngreen)
+                            htim2.Instance->CCR2 = (3.91 * --ngreen);
+                        if (tblue != nblue)
+                            htim2.Instance->CCR3 = (3.91 * --nblue);
+                        HAL_Delay(20);
+                    }
 
-                    htim2.Instance->CCR1 = (3.91 * nred);
-                    htim2.Instance->CCR2 = (3.91 * ngreen);
-                    htim2.Instance->CCR3 = (3.91 * nblue);
-                    nred /= 1.2;
-                    ngreen /= 1.2;
-                    nblue /= 1.2;
                 }
 
             } else {
